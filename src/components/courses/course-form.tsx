@@ -39,18 +39,22 @@ export function CourseForm({ categories, initialData, courseId }: CourseFormProp
     const formData = new FormData(e.currentTarget)
     const { createCourse, updateCourse } = await import("@/lib/actions/courses")
 
-    const result = courseId
-      ? await updateCourse(courseId, formData)
-      : await createCourse(formData)
-
-    if (result?.error) {
-      setError(result.error)
-    } else if (result?.slug) {
-      router.push(`/dashboard/teacher/courses`)
-      router.refresh()
+    if (courseId) {
+      const result = await updateCourse(courseId, formData)
+      if (result.error) {
+        setError(result.error)
+      } else {
+        router.push("/dashboard/teacher/courses")
+        router.refresh()
+      }
     } else {
-      router.push("/dashboard/teacher/courses")
-      router.refresh()
+      const result = await createCourse(formData)
+      if (result.error) {
+        setError(result.error)
+      } else {
+        router.push("/dashboard/teacher/courses")
+        router.refresh()
+      }
     }
     setLoading(false)
   }
