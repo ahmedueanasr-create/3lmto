@@ -8,6 +8,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { formatPrice } from "@/lib/utils"
 import { EnrollButton } from "@/components/courses/enroll-button"
 import { ReviewSection } from "@/components/courses/review-section"
+import type { Module, Lesson } from "@/types/database"
 
 export default async function CoursePage({
   params,
@@ -112,7 +113,7 @@ export default async function CoursePage({
               <section>
                 <h2 className="text-2xl font-bold mb-4">ماذا ستتعلم</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {course.outcomes.map((outcome, i) => (
+                  {course.outcomes.map((outcome: string, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
                       <span>{outcome}</span>
@@ -127,7 +128,7 @@ export default async function CoursePage({
               <section>
                 <h2 className="text-2xl font-bold mb-4">المتطلبات</h2>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                  {course.requirements.map((req, i) => (
+                  {course.requirements.map((req: string, i) => (
                     <li key={i}>{req}</li>
                   ))}
                 </ul>
@@ -138,7 +139,7 @@ export default async function CoursePage({
             <section>
               <h2 className="text-2xl font-bold mb-4">محتويات الدورة</h2>
               <div className="space-y-4">
-                {course.modules?.map((module, mi) => (
+                {course.modules?.map((module: Module, mi) => (
                   <Card key={module.id}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-2">
@@ -150,7 +151,7 @@ export default async function CoursePage({
                         </span>
                       </div>
                       <div className="space-y-1">
-                        {module.lessons?.map((lesson, li) => (
+                        {module.lessons?.map((lesson: Lesson, li) => (
                           <div key={lesson.id} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-muted/50 text-sm">
                             <div className="flex items-center gap-2">
                               {lesson.content_type === "video" ? (
