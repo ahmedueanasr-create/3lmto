@@ -37,13 +37,11 @@ export function CourseForm({ categories, initialData, courseId }: CourseFormProp
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const action = courseId
-      ? (await import("@/lib/actions/courses")).updateCourse
-      : (await import("@/lib/actions/courses")).createCourse
+    const { createCourse, updateCourse } = await import("@/lib/actions/courses")
 
     const result = courseId
-      ? await action(courseId, formData)
-      : await action(formData)
+      ? await updateCourse(courseId, formData)
+      : await createCourse(formData)
 
     if (result?.error) {
       setError(result.error)
