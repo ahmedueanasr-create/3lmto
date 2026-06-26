@@ -53,6 +53,21 @@ export default async function CoursesPage({
           </Button>
         </form>
         <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
+            {["all", "beginner", "intermediate", "advanced"].map((l) => (
+              <a
+                key={l}
+                href={`/courses?level=${l}${params.category ? `&category=${params.category}` : ""}`}
+                className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                  (params.level || "all") === l ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                }`}
+              >
+                {l === "all" ? "الكل" : l === "beginner" ? "مبتدئ" : l === "intermediate" ? "متوسط" : "متقدم"}
+              </a>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-2 flex-wrap">
           {categories?.map((cat) => (
             <a
               key={cat.id}
