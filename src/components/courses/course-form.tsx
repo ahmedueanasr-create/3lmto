@@ -14,13 +14,13 @@ import type { Category } from "@/types/database"
 interface CourseFormProps {
   categories: Category[]
   initialData?: {
-    title?: string
-    description?: string
-    short_description?: string
-    price?: number
-    is_free?: boolean
-    level?: string
-    category_id?: string
+    title?: string | null
+    description?: string | null
+    short_description?: string | null
+    price?: number | null
+    is_free?: boolean | null
+    level?: string | null
+    category_id?: string | null
   }
   courseId?: string
 }
@@ -63,23 +63,23 @@ export function CourseForm({ categories, initialData, courseId }: CourseFormProp
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="title">عنوان الدورة</Label>
-        <Input id="title" name="title" defaultValue={initialData?.title} required />
+        <Input id="title" name="title" defaultValue={initialData?.title || ""} required />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="short_description">وصف مختصر</Label>
-        <Textarea id="short_description" name="short_description" defaultValue={initialData?.short_description} />
+        <Textarea id="short_description" name="short_description" defaultValue={initialData?.short_description || ""} />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="description">الوصف الكامل</Label>
-        <Textarea id="description" name="description" className="min-h-[200px]" defaultValue={initialData?.description} />
+        <Textarea id="description" name="description" className="min-h-[200px]" defaultValue={initialData?.description || ""} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="category_id">التصنيف</Label>
-          <Select name="category_id" defaultValue={initialData?.category_id}>
+          <Select name="category_id" defaultValue={initialData?.category_id || undefined}>
             <SelectTrigger>
               <SelectValue placeholder="اختر تصنيف" />
             </SelectTrigger>

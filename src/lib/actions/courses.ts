@@ -134,6 +134,90 @@ export async function updateLessonProgress(lessonId: string, watchSeconds: numbe
   })
 }
 
+export async function getCourseById(courseId: string) {
+  const supabase = await createServerSupabaseClient()
+  const { data: course } = await supabase
+    .from("courses")
+    .select("*, modules:modules(*, lessons:lessons(*))")
+    .eq("id", courseId)
+    .single()
+  return course
+}
+
+export async function addModule(formData: FormData) {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "غير مصرح" }
+
+  const courseId = formData.get("courseId") as string
+  const title = formData.get("title") as string
+  const sortOrder = parseInt(formData.get("sortOrder") as string) || 0
+
+  const { error } = await supabase.from("modules").insert({
+    course_id: courseId,
+    title,
+    sort_order: sortOrder,
+  })
+
+  if (error) return { error: error.message }
+  revalidatePath(`/dashboard/teacher/courses/${courseId}/edit`)
+  return { success: true }
+}
+
+export async function deleteModule(moduleId: string) {
+  const supabase = await createServerSupabaseClient()
+  const { error } = await supabase.from("modules").delete().eq("id", moduleId)
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
+export async function addLesson(formData: FormData) {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "غير مصرح" }
+
+  const moduleId = formData.get("moduleId") as string
+  const title = formData.get("title") as string
+  const contentType = formData.get("contentType") as string
+  const sortOrder = parseInt(formData.get("sortOrder") as string) || 0
+
+  const { error } = await supabase.from("lessons").insert({
+    module_id: moduleId,
+    title,
+    content_type: contentType || "video",
+    sort_order: sortOrder,
+  })
+
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
+export async function deleteLesson(lessonId: string) {
+  const supabase = await createServerSupabaseClient()
+  const { error } = await supabase.from("lessons").delete().eq("id", lessonId)
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
+export async function updateLesson(lessonId: string, formData: FormData) {
+  const supabase = await createServerSupabaseClient()
+  const updates: Record<string, unknown> = {}
+  const fields = ["title", "description", "content_type", "video_url", "video_duration", "article_body", "is_free", "is_published"]
+
+  for (const field of fields) {
+    const value = formData.get(field)
+    if (value !== null) {
+      if (["video_duration"].includes(field)) updates[field] = parseInt(value as string) || 0
+      else if (["is_free", "is_published"].includes(field)) updates[field] = value === "true"
+      else updates[field] = value as string
+    }
+  }
+
+  const { error } = await supabase.from("lessons").update(updates).eq("id", lessonId)
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
 export async function submitQuiz(quizId: string, answers: number[]) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
