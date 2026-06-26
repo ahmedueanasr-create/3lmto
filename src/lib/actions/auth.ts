@@ -6,6 +6,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 export async function signUp(formData: FormData) {
   const supabase = await createServerSupabaseClient()
+  const headersList = await headers()
   const email = formData.get("email") as string
   const password = formData.get("password") as string
   const fullName = formData.get("full_name") as string
@@ -15,7 +16,7 @@ export async function signUp(formData: FormData) {
     password,
     options: {
       data: { full_name: fullName },
-      emailRedirectTo: `${headers().get("origin")}/auth/callback`,
+      emailRedirectTo: `${headersList.get("origin")}/auth/callback`,
     },
   })
 
@@ -36,10 +37,11 @@ export async function signIn(formData: FormData) {
 
 export async function signInWithProvider(provider: "google" | "apple" | "facebook") {
   const supabase = await createServerSupabaseClient()
+  const headersList = await headers()
   const { data } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${headers().get("origin")}/api/auth/callback`,
+      redirectTo: `${headersList.get("origin")}/api/auth/callback`,
     },
   })
   if (data.url) redirect(data.url)
@@ -53,10 +55,11 @@ export async function signOut() {
 
 export async function resetPassword(formData: FormData) {
   const supabase = await createServerSupabaseClient()
+  const headersList = await headers()
   const email = formData.get("email") as string
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${headers().get("origin")}/auth/callback?next=update-password`,
+    redirectTo: `${headersList.get("origin")}/auth/callback?next=update-password`,
   })
 
   if (error) return { error: error.message }
